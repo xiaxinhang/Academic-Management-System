@@ -1,6 +1,7 @@
 ﻿import express from "express";
 import { pool } from "../db/pool.js";
 import { authRequired, adminOnly } from "../middleware.js";
+import { writeLog } from "../utils/log.js";
 
 const router = express.Router();
 
@@ -27,18 +28,18 @@ router.get("/", authRequired, async (req, res) => {
 
 router.post("/", authRequired, adminOnly, async (req, res) => {
   const { studentId, courseId, score } = req.body;
-  if (!studentId || !courseId || score === undefined) {
-    return res.status(400).json({ message: "缺少必填字段" });
-  }
-  if (Number(score) < 0 || Number(score) > 100) {
-    return res.status(400).json({ message: "成绩范围应在 0 到 100 之间" });
-  }
+  if (!studentId || !courseId || score === undefined) return res.status(400).json({ message: "缺少必填字段" });
+  if (Number(score) < 0 || Number(score) > 100) return res.status(400).json({ message: "成绩范围应在 0 到 100 之间" });
+
   const [exist] = await pool.query("SELECT id FROM grades WHERE student_id = ? AND course_id = ?", [studentId, courseId]);
   if (exist.length > 0) {
     await pool.query("UPDATE grades SET score = ? WHERE id = ?", [score, exist[0].id]);
+    await writeLog({ userId: req.user.id, action: "UPDATE", target: "GRADE", detail: `grade_id=${exist[0].id}` });
     return res.json({ message: "成绩更新成功" });
   }
+
   const [result] = await pool.query("INSERT INTO grades (student_id, course_id, score) VALUES (?, ?, ?)", [studentId, courseId, score]);
+  await writeLog({ userId: req.user.id, action: "CREATE", target: "GRADE", detail: `grade_id=${result.insertId}` });
   res.status(201).json({ id: result.insertId });
 });
 

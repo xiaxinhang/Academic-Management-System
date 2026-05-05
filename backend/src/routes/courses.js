@@ -1,8 +1,16 @@
 ﻿import express from "express";
 import { pool } from "../db/pool.js";
 import { authRequired, adminOnly } from "../middleware.js";
+import { writeLog } from "../utils/log.js";
 
 const router = express.Router();
+
+router.get("/options", authRequired, async (_, res) => {
+  const [rows] = await pool.query(
+    "SELECT id, course_code, course_name FROM courses ORDER BY course_code ASC, id ASC"
+  );
+  res.json(rows);
+});
 
 router.get("/", authRequired, async (req, res) => {
   const page = Math.max(1, Number(req.query.page || 1));
@@ -35,6 +43,7 @@ router.post("/", authRequired, adminOnly, async (req, res) => {
     "INSERT INTO courses (course_code, course_name, teacher, credit) VALUES (?, ?, ?, ?)",
     [courseCode, courseName, teacher, credit]
   );
+  await writeLog({ userId: req.user.id, action: "CREATE", target: "COURSE", detail: `course_id=${result.insertId}` });
   res.status(201).json({ id: result.insertId });
 });
 
@@ -46,6 +55,7 @@ router.put("/:id", authRequired, adminOnly, async (req, res) => {
     [courseCode, courseName, teacher, credit, id]
   );
   if (result.affectedRows === 0) return res.status(404).json({ message: "课程不存在" });
+  await writeLog({ userId: req.user.id, action: "UPDATE", target: "COURSE", detail: `course_id=${id}` });
   res.json({ message: "更新成功" });
 });
 
@@ -53,6 +63,7 @@ router.delete("/:id", authRequired, adminOnly, async (req, res) => {
   const { id } = req.params;
   const [result] = await pool.query("DELETE FROM courses WHERE id = ?", [id]);
   if (result.affectedRows === 0) return res.status(404).json({ message: "课程不存在" });
+  await writeLog({ userId: req.user.id, action: "DELETE", target: "COURSE", detail: `course_id=${id}` });
   res.json({ message: "删除成功" });
 });
 

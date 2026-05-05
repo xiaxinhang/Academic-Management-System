@@ -5,6 +5,9 @@ import coursesRouter from "./routes/courses.js";
 import enrollmentsRouter from "./routes/enrollments.js";
 import gradesRouter from "./routes/grades.js";
 import authRouter from "./routes/auth.js";
+import studentsRouter from "./routes/students.js";
+import usersRouter from "./routes/users.js";
+import dashboardRouter from "./routes/dashboard.js";
 
 dotenv.config();
 
@@ -22,6 +25,9 @@ app.use("/api/auth", authRouter);
 app.use("/api/courses", coursesRouter);
 app.use("/api/enrollments", enrollmentsRouter);
 app.use("/api/grades", gradesRouter);
+app.use("/api/students", studentsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((err, _, res, __) => {
   console.error(err);
