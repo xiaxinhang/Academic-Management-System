@@ -1,5 +1,13 @@
-# 依赖文件
+# Dependencies
 node_modules/
 
-# 环境变量文件
+# Build output
+dist/
+frontend/dist/
+
+# Local runtime logs
+*.log
+*.err
+
+# Environment files
 .env

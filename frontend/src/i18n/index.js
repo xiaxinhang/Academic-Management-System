@@ -1,21 +1,29 @@
-﻿import { createI18n } from "vue-i18n";
+import { createI18n } from "vue-i18n";
 
 const messages = {
   zh: {
     common: {
       logout: "退出登录",
       search: "搜索",
+      reset: "重置",
       save: "保存",
+      cancel: "取消",
       delete: "删除",
-      prev: "上一页",
-      next: "下一页",
+      edit: "编辑",
       create: "新增",
       update: "更新",
+      export: "导出 CSV",
+      batchDelete: "批量删除",
+      actions: "操作",
+      confirmDelete: "确认删除这条记录？",
+      confirmBatchDelete: "确认删除选中的记录？",
       selectStudent: "请选择学生",
-      selectCourse: "请选择课程"
+      selectCourse: "请选择课程",
+      empty: "暂无数据",
+      language: "语言"
     },
     nav: {
-      dashboard: "仪表盘",
+      dashboard: "数据看板",
       courses: "课程管理",
       students: "学生管理",
       users: "用户管理",
@@ -23,40 +31,53 @@ const messages = {
       grades: "成绩管理",
       logs: "操作日志"
     },
-    app: { title: "教务管理系统 Pro", roleAdmin: "管理员", roleStudent: "学生" },
+    app: { title: "教务管理系统 Pro", roleAdmin: "管理员", roleStudent: "学生", roleTeacher: "教师" },
     login: {
-      subtitle: "请登录后继续",
+      subtitle: "面向高校教务场景的全栈管理系统",
+      intro: "覆盖课程、学生、选课、成绩、RBAC 权限、操作日志和数据可视化，适合作为 Vue3 + Node.js 全栈项目展示。",
       username: "用户名",
       password: "密码",
       submit: "登录",
-      tips: "管理员：admin/admin123 | 学生：stu001/123456"
+      tips: "默认账号：admin / admin123；学生：stu001 / 123456"
     },
-    dashboard: { c1: "课程总数", c2: "学生总数", c3: "选课总数", c4: "平均成绩", hot: "课程统计" },
+    dashboard: {
+      title: "数据看板",
+      c1: "课程总数",
+      c2: "学生总数",
+      c3: "选课总数",
+      c4: "平均成绩",
+      hot: "课程统计",
+      topCourses: "课程选课人数 Top 5",
+      gradeDistribution: "成绩分布",
+      logTrend: "最近操作趋势"
+    },
     courses: {
       title: "课程管理",
-      searchPlaceholder: "搜索课程/教师",
+      searchPlaceholder: "搜索课程编号、名称或教师",
       code: "课程编号",
       name: "课程名称",
       teacher: "授课教师",
       credit: "学分",
+      capacity: "容量",
+      selected: "已选人数",
       add: "新增课程",
-      action: "操作",
-      pageInfo: "第 {page} 页 / 共 {total} 页"
+      edit: "编辑课程"
     },
-    students: { title: "学生管理", no: "学号", name: "姓名", className: "班级", gradeYear: "年级", add: "新增学生" },
+    students: { title: "学生管理", searchPlaceholder: "搜索学号、姓名或班级", no: "学号", name: "姓名", className: "班级", gradeYear: "年级", add: "新增学生", edit: "编辑学生" },
     users: {
       title: "用户管理",
       username: "用户名",
       password: "密码",
+      passwordTip: "编辑时留空则不修改密码",
       role: "角色",
       bindStudent: "绑定学生",
-      add: "新增用户"
+      add: "新增用户",
+      edit: "编辑用户"
     },
     enrollments: {
       title: "选课管理",
+      searchPlaceholder: "搜索学生或课程",
       add: "提交选课",
-      studentId: "学生ID",
-      courseId: "课程ID",
       studentNo: "学号",
       studentName: "姓名",
       courseName: "课程名",
@@ -65,7 +86,8 @@ const messages = {
     },
     grades: {
       title: "成绩管理",
-      queryByNo: "按学号查询（管理员）",
+      searchPlaceholder: "搜索学生或课程",
+      queryByNo: "按学号精确查询",
       editTitle: "录入/更新成绩",
       score: "成绩",
       save: "保存成绩"
@@ -86,16 +108,24 @@ const messages = {
   },
   en: {
     common: {
-      logout: "Log out",
+      logout: "Log Out",
       search: "Search",
+      reset: "Reset",
       save: "Save",
+      cancel: "Cancel",
       delete: "Delete",
-      prev: "Prev",
-      next: "Next",
+      edit: "Edit",
       create: "Create",
       update: "Update",
-      selectStudent: "Select student",
-      selectCourse: "Select course"
+      export: "Export CSV",
+      batchDelete: "Batch Delete",
+      actions: "Actions",
+      confirmDelete: "Delete this record?",
+      confirmBatchDelete: "Delete selected records?",
+      selectStudent: "Select Student",
+      selectCourse: "Select Course",
+      empty: "No Data",
+      language: "Language"
     },
     nav: {
       dashboard: "Dashboard",
@@ -106,40 +136,53 @@ const messages = {
       grades: "Grades",
       logs: "Logs"
     },
-    app: { title: "Edu Management Pro", roleAdmin: "Admin", roleStudent: "Student" },
+    app: { title: "Edu Management Pro", roleAdmin: "Admin", roleStudent: "Student", roleTeacher: "Teacher" },
     login: {
-      subtitle: "Please sign in to continue",
+      subtitle: "A full-stack academic administration system",
+      intro: "Courses, students, enrollments, grades, RBAC, operation logs and visual analytics powered by Vue3 and Node.js.",
       username: "Username",
       password: "Password",
-      submit: "Sign in",
-      tips: "Admin: admin/admin123 | Student: stu001/123456"
+      submit: "Sign In",
+      tips: "Default accounts: admin / admin123; student: stu001 / 123456"
     },
-    dashboard: { c1: "Courses", c2: "Students", c3: "Enrollments", c4: "Average Score", hot: "Course Statistics" },
+    dashboard: {
+      title: "Dashboard",
+      c1: "Courses",
+      c2: "Students",
+      c3: "Enrollments",
+      c4: "Average Score",
+      hot: "Course Statistics",
+      topCourses: "Top 5 Enrolled Courses",
+      gradeDistribution: "Grade Distribution",
+      logTrend: "Recent Log Trend"
+    },
     courses: {
       title: "Course Management",
-      searchPlaceholder: "Search by course or teacher",
+      searchPlaceholder: "Search code, course or teacher",
       code: "Course Code",
       name: "Course Name",
       teacher: "Teacher",
       credit: "Credit",
+      capacity: "Capacity",
+      selected: "Selected",
       add: "Add Course",
-      action: "Action",
-      pageInfo: "Page {page} / {total}"
+      edit: "Edit Course"
     },
-    students: { title: "Student Management", no: "Student No", name: "Name", className: "Class", gradeYear: "Grade", add: "Add Student" },
+    students: { title: "Student Management", searchPlaceholder: "Search no, name or class", no: "Student No", name: "Name", className: "Class", gradeYear: "Grade Year", add: "Add Student", edit: "Edit Student" },
     users: {
       title: "User Management",
       username: "Username",
       password: "Password",
+      passwordTip: "Leave blank to keep current password",
       role: "Role",
       bindStudent: "Bind Student",
-      add: "Add User"
+      add: "Add User",
+      edit: "Edit User"
     },
     enrollments: {
       title: "Enrollment Management",
+      searchPlaceholder: "Search student or course",
       add: "Add Enrollment",
-      studentId: "Student ID",
-      courseId: "Course ID",
       studentNo: "Student No",
       studentName: "Name",
       courseName: "Course",
@@ -148,8 +191,9 @@ const messages = {
     },
     grades: {
       title: "Grade Management",
-      queryByNo: "Search by student no (admin)",
-      editTitle: "Create/Update Grade",
+      searchPlaceholder: "Search student or course",
+      queryByNo: "Exact student no",
+      editTitle: "Create / Update Grade",
       score: "Score",
       save: "Save Grade"
     },

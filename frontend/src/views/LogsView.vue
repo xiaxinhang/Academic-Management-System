@@ -1,22 +1,38 @@
-﻿<template>
-  <section class="panel">
-    <h2>{{ $t("logs.title") }}</h2>
-    <table>
-      <thead><tr><th>ID</th><th>{{ $t("logs.action") }}</th><th>{{ $t("logs.target") }}</th><th>{{ $t("logs.detail") }}</th><th>{{ $t("logs.operator") }}</th><th>{{ $t("logs.time") }}</th></tr></thead>
-      <tbody><tr v-for="item in store.logs" :key="item.id"><td>{{ item.id }}</td><td>{{ item.action }}</td><td>{{ item.target }}</td><td>{{ item.detail }}</td><td>{{ item.username || '-' }}</td><td>{{ item.created_at }}</td></tr></tbody>
-    </table>
-    <div class="pager">
-      <button :disabled="store.logsPage <= 1" @click="change(store.logsPage-1)">{{ $t("common.prev") }}</button>
-      <span>{{ store.logsPage }} / {{ totalPage }}</span>
-      <button :disabled="store.logsPage >= totalPage" @click="change(store.logsPage+1)">{{ $t("common.next") }}</button>
+<template>
+  <section class="table-panel" v-loading="store.loading">
+    <div class="toolbar">
+      <div class="panel-title">{{ $t("logs.title") }}</div>
     </div>
+    <el-table :data="store.logs" empty-text="暂无数据">
+      <el-table-column prop="id" label="ID" width="90" />
+      <el-table-column prop="action" :label="$t('logs.action')" width="120">
+        <template #default="{ row }"><el-tag>{{ row.action }}</el-tag></template>
+      </el-table-column>
+      <el-table-column prop="target" :label="$t('logs.target')" width="130" />
+      <el-table-column prop="detail" :label="$t('logs.detail')" min-width="220" />
+      <el-table-column prop="username" :label="$t('logs.operator')" width="140">
+        <template #default="{ row }">{{ row.username || "-" }}</template>
+      </el-table-column>
+      <el-table-column prop="created_at" :label="$t('logs.time')" min-width="180" />
+    </el-table>
+    <el-pagination
+      class="pagination"
+      layout="total, sizes, prev, pager, next"
+      :total="store.logsTotal"
+      v-model:current-page="store.logsPage"
+      v-model:page-size="store.logsPageSize"
+      :page-sizes="[10, 20, 50]"
+      @change="fetch"
+    />
   </section>
 </template>
+
 <script setup>
-import { computed, onMounted } from "vue";
+import { onMounted } from "vue";
 import { useEduStore } from "../stores/edu";
+
 const store = useEduStore();
-const totalPage = computed(() => Math.max(1, Math.ceil(store.logsTotal / store.logsPageSize)));
-const change = async (p) => { store.logsPage = p; await store.safeRun(() => store.fetchLogs()); };
-onMounted(() => store.safeRun(() => store.fetchLogs()));
+const fetch = () => store.safeRun(() => store.fetchLogs());
+
+onMounted(fetch);
 </script>

@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import coursesRouter from "./routes/courses.js";
@@ -8,6 +8,8 @@ import authRouter from "./routes/auth.js";
 import studentsRouter from "./routes/students.js";
 import usersRouter from "./routes/users.js";
 import dashboardRouter from "./routes/dashboard.js";
+import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+import { success } from "./utils/response.js";
 
 dotenv.config();
 
@@ -18,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (_, res) => {
-  res.json({ message: "Edu API is running" });
+  success(res, { uptime: process.uptime() }, "Edu API is running");
 });
 
 app.use("/api/auth", authRouter);
@@ -29,10 +31,8 @@ app.use("/api/students", studentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/dashboard", dashboardRouter);
 
-app.use((err, _, res, __) => {
-  console.error(err);
-  res.status(500).json({ message: "服务器内部错误" });
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
