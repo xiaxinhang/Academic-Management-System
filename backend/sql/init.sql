@@ -1,12 +1,6 @@
 CREATE DATABASE IF NOT EXISTS edu_management DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE edu_management;
 
-DROP TABLE IF EXISTS operation_logs;
-DROP TABLE IF EXISTS grades;
-DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS students;
-DROP TABLE IF EXISTS courses;
 
 CREATE TABLE courses (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -106,3 +100,34 @@ INSERT INTO grades (student_id, course_id, score) VALUES
 
 INSERT INTO operation_logs (user_id, action, target, detail) VALUES
 (1, 'INIT', 'SYSTEM', 'ÂàùÂßãÂåñÁ§∫‰æãÊï∞ÊçÆ');
+
+-- Ensure computer class students (id 1~3) cover all CS courses as required courses.
+INSERT IGNORE INTO enrollments (student_id, course_id)
+SELECT s.id, c.id
+FROM students s
+JOIN courses c ON 1 = 1
+WHERE s.id IN (1, 2, 3);
+
+-- Fill missing grades for students 1~3 across CS101~CS107 to keep weighted GPA meaningful.
+INSERT IGNORE INTO grades (student_id, course_id, score) VALUES
+(1,3,88),(1,4,85),(1,5,90),(1,6,87),(1,7,86),
+(2,1,82),(2,4,80),(2,5,84),(2,6,83),(2,7,81),
+(3,2,89),(3,3,86),(3,5,88),(3,6,87),(3,7,85);
+
+CREATE TABLE IF NOT EXISTS notices (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(120) NOT NULL,
+  link_url VARCHAR(255) NOT NULL,
+  summary VARCHAR(255) NULL,
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO notices (title, link_url, summary, is_published)
+SELECT 'πÿ”⁄∆⁄ƒ©øº ‘∞≤≈≈µƒÕ®÷™', 'https://example.edu/news/final-exam', '«Î∏˜∞‡πÿ◊¢øº ‘ ±º‰”ÎΩÃ “∞≤≈≈°£', 1
+WHERE NOT EXISTS (SELECT 1 FROM notices WHERE title = 'πÿ”⁄∆⁄ƒ©øº ‘∞≤≈≈µƒÕ®÷™');
+
+INSERT INTO notices (title, link_url, summary, is_published)
+SELECT 'Ω±—ßΩ∆¿∂®≤ƒ¡œÃ·ΩªÕ®÷™', 'https://example.edu/news/scholarship', 'Ã·ΩªΩÿ÷π ±º‰Œ™±æ÷‹ŒÂ 17:00°£', 1
+WHERE NOT EXISTS (SELECT 1 FROM notices WHERE title = 'Ω±—ßΩ∆¿∂®≤ƒ¡œÃ·ΩªÕ®÷™');

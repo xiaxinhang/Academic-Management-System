@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.js";
 import studentsRouter from "./routes/students.js";
 import usersRouter from "./routes/users.js";
 import dashboardRouter from "./routes/dashboard.js";
+import noticesRouter from "./routes/notices.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import { success } from "./utils/response.js";
 
@@ -30,6 +31,7 @@ app.use("/api/grades", gradesRouter);
 app.use("/api/students", studentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/notices", noticesRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

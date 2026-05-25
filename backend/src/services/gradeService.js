@@ -50,7 +50,7 @@ export async function listGrades(query, user) {
      FROM grades g
      JOIN students s ON g.student_id = s.id
      JOIN courses c ON g.course_id = c.id${where}
-     ORDER BY g.id DESC
+     ORDER BY s.student_no ASC, c.course_code ASC, g.id ASC
      LIMIT ? OFFSET ?`,
     [...params, pageSize, offset]
   );

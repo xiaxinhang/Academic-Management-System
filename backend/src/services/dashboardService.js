@@ -7,24 +7,50 @@ export async function summary(user) {
 
   const [[courseCount]] = await pool.query(`SELECT COUNT(*) AS total FROM courses${teacherWhere}`, teacherParams);
   const [[studentCount]] = await pool.query("SELECT COUNT(*) AS total FROM students");
-  const [[enrollCount]] = await pool.query(
-    `SELECT COUNT(*) AS total
-     FROM enrollments e
-     JOIN courses c ON c.id = e.course_id${teacherWhere ? " WHERE c.teacher = ?" : ""}`,
-    teacherParams
-  );
-  const [[gradeAvg]] = await pool.query(
-    `SELECT ROUND(AVG(g.score), 2) AS avgScore
-     FROM grades g
-     JOIN courses c ON c.id = g.course_id${teacherWhere ? " WHERE c.teacher = ?" : ""}`,
-    teacherParams
-  );
+  let enrollCount = 0;
+  let avgScore = 0;
+
+  if (user.role === "student") {
+    const [[myEnroll]] = await pool.query(
+      "SELECT COUNT(*) AS total FROM enrollments WHERE student_id = ?",
+      [user.studentId]
+    );
+    enrollCount = myEnroll.total;
+
+    const [[weighted]] = await pool.query(
+      `SELECT ROUND(
+          COALESCE(SUM(g.score * c.credit) / NULLIF(SUM(c.credit), 0), 0),
+          2
+        ) AS avgScore
+       FROM grades g
+       JOIN courses c ON c.id = g.course_id
+       WHERE g.student_id = ?`,
+      [user.studentId]
+    );
+    avgScore = weighted.avgScore || 0;
+  } else {
+    const [[enroll]] = await pool.query(
+      `SELECT COUNT(*) AS total
+       FROM enrollments e
+       JOIN courses c ON c.id = e.course_id${teacherWhere ? " WHERE c.teacher = ?" : ""}`,
+      teacherParams
+    );
+    enrollCount = enroll.total;
+
+    const [[gradeAvg]] = await pool.query(
+      `SELECT ROUND(AVG(g.score), 2) AS avgScore
+       FROM grades g
+       JOIN courses c ON c.id = g.course_id${teacherWhere ? " WHERE c.teacher = ?" : ""}`,
+      teacherParams
+    );
+    avgScore = gradeAvg.avgScore || 0;
+  }
 
   return {
     courseCount: courseCount.total,
-    studentCount: user.role === "teacher" ? "-" : studentCount.total,
-    enrollCount: enrollCount.total,
-    avgScore: gradeAvg.avgScore || 0
+    studentCount: user.role === "admin" ? studentCount.total : null,
+    enrollCount,
+    avgScore
   };
 }
 

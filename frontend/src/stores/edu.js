@@ -48,6 +48,8 @@ export const useEduStore = defineStore("edu", {
     topCourses: [],
     gradeDistribution: {},
     logTrend: [],
+    notices: [],
+    noticeAdminList: [],
     logs: [],
     logsTotal: 0,
     logsPage: 1,
@@ -123,6 +125,27 @@ export const useEduStore = defineStore("edu", {
       if (!this.isAdmin) return;
       const { data } = await request.get("/dashboard/log-trend");
       this.logTrend = data;
+    },
+    async fetchNotices() {
+      const { data } = await request.get("/notices");
+      this.notices = data;
+    },
+    async fetchNoticeAdminList() {
+      if (!this.isAdmin) return;
+      const { data } = await request.get("/notices/admin");
+      this.noticeAdminList = data;
+    },
+    async createNotice(payload) {
+      await request.post("/notices", payload);
+      this.setMessage("success", "通知发布成功");
+      await this.fetchNotices();
+      if (this.isAdmin) await this.fetchNoticeAdminList();
+    },
+    async deleteNotice(id) {
+      await request.delete(`/notices/${id}`);
+      this.setMessage("success", "通知删除成功");
+      await this.fetchNotices();
+      if (this.isAdmin) await this.fetchNoticeAdminList();
     },
 
     async fetchCourses() {
